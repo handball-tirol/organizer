@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="de" data-ht-loader>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-P/pc9giSYZlcvmZXcmZSTeSRgC6KK0bVysC6vx7GGRA=' 'sha256-yVBhl8r4CaB1tt7h2g02+xnacVj/6KiOewyWxdhiPJk=' 'sha256-pIczVpAxb349H6T80cD/LWa2cLjM9DMqW4VtBYma8to='; style-src 'self' 'unsafe-inline'; font-src data:; img-src 'self' data: blob:; connect-src 'self' https://oitptywgcmpwqhintsvj.supabase.co; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#111111">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Organizer">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="robots" content="noindex, nofollow">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Handball-Tirol-Organizer</title>
+<style>
+:root{--bg:#f4f4f4;--surface:#fff;--ink:#141414;--muted:#666;--line:#dcdcdc;--mark:#c8102e;--danger:#a60f26}
+@media (prefers-color-scheme:dark){:root{--bg:#121212;--surface:#1c1c1c;--ink:#f2f2f2;--muted:#a0a0a0;--line:#333;--mark:#d6203c;--danger:#ff8a8a}}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px}
+form{background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--mark);border-radius:8px;padding:24px;width:100%;max-width:380px;display:grid;gap:12px}
+img{width:56px;height:56px;border-radius:10px}
+h1{margin:0;font-size:22px}
+label{display:grid;gap:4px;font-weight:600;font-size:14px}
+input{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);width:100%}
+.chk{display:flex;gap:8px;align-items:center;font-weight:400}
+.chk input{width:auto}
+button{font:inherit;font-weight:700;padding:11px 14px;border:0;border-radius:6px;background:var(--mark);color:#fff;cursor:pointer}
+button:disabled{opacity:.6;cursor:default}
+#msg{color:var(--danger);font-weight:600;font-size:14px;min-height:1em;margin:0}
+#msg.info{color:var(--muted)}
+footer{margin-top:18px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<form id="f" novalidate>
+ <img src="icon-192.png" alt="">
+ <h1>Anmeldung</h1>
+ <label>E-Mail<input id="em" type="email" autocomplete="username" required></label>
+ <label>Passwort<input id="pw" type="password" autocomplete="current-password" required></label>
+ <label class="chk"><input type="checkbox" id="keep">Angemeldet bleiben (nur auf deinem eigenen Gerät)</label>
+ <p id="msg" role="alert"></p>
+ <button id="ok" type="submit">Anmelden</button>
+</form>
+<footer>© 2026 MJ · Handball-Tirol-Organizer</footer>
+<script>(function(){
+'use strict';
+if(window.top!==window.self){document.body.textContent='Der Organizer darf nicht in andere Seiten eingebettet werden. Bitte direkt öffnen.';return}
+var SB={url:'https://oitptywgcmpwqhintsvj.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pdHB0eXdnY21wd3FoaW50c3ZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMjIwMzQsImV4cCI6MjEwODU5ODAzNH0.h1rHU6JxuSikXMjNGbWbfasIQcTGbVioI_WqgagQ7Fk'},APP='c447c75a5cecf393678c814c2bdc11d4c664a879a5c43d6c691d81232f3724e0',SKEY='ht-sb-session',KKEY='ht-sb-keep';
+window.__htLoader=true;window.__htAppId=APP;
+var $=function(id){return document.getElementById(id)};
+function say(t,info){var m=$('msg');m.textContent=t||'';m.className=info?'info':''}
+function busy(b){$('ok').disabled=b;$('em').disabled=b;$('pw').disabled=b}
+try{if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(function(){})}catch(e){}
+function loadSess(){var st=['localStorage','sessionStorage'];for(var i=0;i<2;i++){try{var v=JSON.parse(window[st[i]].getItem(SKEY)||'null');if(v&&v.refresh_token)return {s:v,keep:i===0}}catch(e){}}return null}
+function storeSess(s,keep){try{var j=JSON.stringify(s);if(keep){localStorage.setItem(SKEY,j);sessionStorage.removeItem(SKEY);localStorage.setItem(KKEY,'1')}else{sessionStorage.setItem(SKEY,j);localStorage.removeItem(SKEY);localStorage.removeItem(KKEY)}}catch(e){}}
+function clearSess(){try{localStorage.removeItem(SKEY)}catch(e){}try{sessionStorage.removeItem(SKEY)}catch(e){}}
+function mk(j,old){return {access_token:j.access_token,refresh_token:j.refresh_token,exp:Date.now()+(j.expires_in||3600)*1000,uid:(j.user&&j.user.id)||(old&&old.uid)}}
+function err(m,status){var e=new Error(m);e.status=status;return e}
+async function auth(path,body){
+ var r=await fetch(SB.url+'/auth/v1/'+path,{method:'POST',headers:{apikey:SB.key,'Content-Type':'application/json'},body:JSON.stringify(body)});
+ var j=await r.json().catch(function(){return {}});
+ if(!r.ok)throw err(j.msg||j.error_description||j.message||('Fehler '+r.status),r.status);
+ return j;
+}
+async function sha(t){var b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return Array.prototype.map.call(new Uint8Array(b),function(x){return x.toString(16).padStart(2,'0')}).join('')}
+async function start(s,keep){
+ say('App wird geladen …',true);busy(true);
+ if(!s.exp||s.exp-Date.now()<60000){s=mk(await auth('token?grant_type=refresh_token',{refresh_token:s.refresh_token}),s);storeSess(s,keep)}
+ var r=await fetch(SB.url+'/rest/v1/app_code?select=html&id=eq.'+APP,{headers:{apikey:SB.key,Authorization:'Bearer '+s.access_token,Accept:'application/json'}});
+ if(r.status===401||r.status===403)throw err('Sitzung abgelaufen, bitte neu anmelden.',401);
+ if(!r.ok)throw err('Die App konnte nicht geladen werden (Fehler '+r.status+').',r.status);
+ var rows=await r.json();
+ if(!rows.length)throw err('Kein Zugriff auf diese App-Version. Entweder hat dein Konto noch kein Profil, oder der Administrator hat diese Version noch nicht in der Datenbank hochgeladen.',404);
+ var html=rows[0].html;
+ if(await sha(html)!==APP)throw err('Die geladene App ist beschädigt (Prüfsumme stimmt nicht).',500);
+ document.open();document.write(html);document.close();
+}
+$('f').addEventListener('submit',async function(e){
+ e.preventDefault();
+ var em=$('em').value.trim(),pw=$('pw').value;
+ if(!em||!pw){say('Bitte E-Mail und Passwort eingeben.');return}
+ busy(true);say('Anmeldung …',true);
+ var keep=$('keep').checked,s;
+ try{s=mk(await auth('token?grant_type=password',{email:em,password:pw}));storeSess(s,keep)}
+ catch(x){busy(false);say(x.status===400?'E-Mail oder Passwort falsch.':(x.message||'Anmeldung nicht möglich.'));return}
+ try{await start(s,keep)}catch(x){busy(false);$('pw').value='';say(x.message||'Die App konnte nicht geladen werden.');if(x.status===401){clearSess()}}
+});
+try{$('keep').checked=localStorage.getItem(KKEY)==='1'}catch(e){}
+var saved=loadSess();
+if(saved){start(saved.s,saved.keep).catch(function(x){busy(false);if(x.status&&x.status<500&&x.status!==404)clearSess();say(x.message||'Die App konnte nicht geladen werden.');$('em').focus()})}
+else $('em').focus();
+})();
+</script>
+</body>
+</html>
