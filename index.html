@@ -2,7 +2,7 @@
 <html lang="de" data-ht-loader>
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Gtdg/1xU7Y//bPxmMzjYdVQnxNPRXNnce96RzPCLnVU=' 'sha256-BUKnGEAMVSB0WwIZr8BPBuljg1/OPd+67lsRRA9ePjM=' 'sha256-W3qe9dK0VkRgpStl0q7cF7blzzDts3wA1WVNeL6fIUw='; style-src 'self' 'unsafe-inline'; font-src data:; img-src 'self' data: blob:; connect-src 'self' https://oitptywgcmpwqhintsvj.supabase.co; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ET6DOYeOX1o403fuYirOKDnxYNkl+8azYsAWyiOk5hQ=' 'sha256-BUKnGEAMVSB0WwIZr8BPBuljg1/OPd+67lsRRA9ePjM=' 'sha256-IaVsWGNFl4sIRqJWoj3nfqVZSBxZlwNg1cSk4C/mE2U='; style-src 'self' 'unsafe-inline'; font-src data:; img-src 'self' data: blob:; connect-src 'self' https://oitptywgcmpwqhintsvj.supabase.co; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#111111">
@@ -47,16 +47,17 @@ footer{margin-top:18px;color:var(--muted);font-size:12px}
 <script>(function(){
 'use strict';
 if(window.top!==window.self){document.body.textContent='Der Organizer darf nicht in andere Seiten eingebettet werden. Bitte direkt öffnen.';return}
-var SB={url:'https://oitptywgcmpwqhintsvj.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pdHB0eXdnY21wd3FoaW50c3ZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMjIwMzQsImV4cCI6MjEwODU5ODAzNH0.h1rHU6JxuSikXMjNGbWbfasIQcTGbVioI_WqgagQ7Fk'},APP='f11f7d94abcf14699b876450092e0a6d8bb012d76fae5393ee5e5e7b55bc952d',SKEY='ht-sb-session',KKEY='ht-sb-keep';
+var SB={url:'https://oitptywgcmpwqhintsvj.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pdHB0eXdnY21wd3FoaW50c3ZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMjIwMzQsImV4cCI6MjEwODU5ODAzNH0.h1rHU6JxuSikXMjNGbWbfasIQcTGbVioI_WqgagQ7Fk'},APP='4fd88cb7c0eb00d4c8a6b5257430a97c6df99e1e5d0ac645f07f6f6e8f6cb3b5',SKEY='ht-sb-session',KKEY='ht-sb-keep';
 window.__htLoader=true;window.__htAppId=APP;
 var $=function(id){return document.getElementById(id)};
 function say(t,info){var m=$('msg');m.textContent=t||'';m.className=info?'info':''}
 function busy(b){$('ok').disabled=b;$('em').disabled=b;$('pw').disabled=b}
 try{if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(function(){})}catch(e){}
-function loadSess(){var st=['localStorage','sessionStorage'];for(var i=0;i<2;i++){try{var v=JSON.parse(window[st[i]].getItem(SKEY)||'null');if(v&&v.refresh_token)return {s:v,keep:i===0}}catch(e){}}return null}
+var MAXAGE=30*864e5;
+function loadSess(){var st=['localStorage','sessionStorage'];for(var i=0;i<2;i++){try{var v=JSON.parse(window[st[i]].getItem(SKEY)||'null');if(v&&v.refresh_token){if(v.since&&Date.now()-v.since>MAXAGE){clearSess();say('Bitte neu anmelden (spätestens alle 30 Tage).',true);return null}return {s:v,keep:i===0}}}catch(e){}}return null}
 function storeSess(s,keep){try{var j=JSON.stringify(s);if(keep){localStorage.setItem(SKEY,j);sessionStorage.removeItem(SKEY);localStorage.setItem(KKEY,'1')}else{sessionStorage.setItem(SKEY,j);localStorage.removeItem(SKEY);localStorage.removeItem(KKEY)}}catch(e){}}
 function clearSess(){try{localStorage.removeItem(SKEY)}catch(e){}try{sessionStorage.removeItem(SKEY)}catch(e){}}
-function mk(j,old){return {access_token:j.access_token,refresh_token:j.refresh_token,exp:Date.now()+(j.expires_in||3600)*1000,uid:(j.user&&j.user.id)||(old&&old.uid)}}
+function mk(j,old){return {access_token:j.access_token,refresh_token:j.refresh_token,exp:Date.now()+(j.expires_in||3600)*1000,uid:(j.user&&j.user.id)||(old&&old.uid),since:(old&&old.since)||Date.now()}}
 function err(m,status){var e=new Error(m);e.status=status;return e}
 async function auth(path,body){
  var r=await fetch(SB.url+'/auth/v1/'+path,{method:'POST',headers:{apikey:SB.key,'Content-Type':'application/json'},body:JSON.stringify(body)});
@@ -87,7 +88,6 @@ $('f').addEventListener('submit',async function(e){
  catch(x){busy(false);say(x.status===400?'E-Mail oder Passwort falsch.':(x.message||'Anmeldung nicht möglich.'));return}
  try{await start(s,keep)}catch(x){busy(false);$('pw').value='';say(x.message||'Die App konnte nicht geladen werden.');if(x.status===401){clearSess()}}
 });
-try{$('keep').checked=localStorage.getItem(KKEY)==='1'}catch(e){}
 var saved=loadSess();
 if(saved){start(saved.s,saved.keep).catch(function(x){busy(false);if(x.status&&x.status<500&&x.status!==404)clearSess();say(x.message||'Die App konnte nicht geladen werden.');$('em').focus()})}
 else $('em').focus();
